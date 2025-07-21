@@ -3,6 +3,7 @@ import { MainMenu, ViewCartButton, BackToMenuButton, CheckoutButton } from './Bu
 import menu from './menu';
 import Cart from './Cart';
 import Checkout from './Checkout';
+import ThankYou from './ThankYou'; // Import the ThankYou component
 
 const TAX_RATE = 0.13;
 const BUTTON_COLOR = '#4605e5';
@@ -148,13 +149,9 @@ function App() {
     }
   };
 
-  // Place order and reset cart after delay
+  // Place order and show thank you page (exit)
   const placeOrder = () => {
     setView('exit');
-    setTimeout(() => {
-      setCart([]);
-      setView('main');
-    }, 5000);
   };
 
   // Calculate totals
@@ -167,7 +164,7 @@ function App() {
   const goToCart = () => setView('cart');
   const goToCheckout = () => setView('checkout');
 
-  // Render top right buttons except on their own pages
+  // Render top right buttons except on main and exit pages
   const renderTopRightButtons = () => (
     <div
       style={{
@@ -181,9 +178,9 @@ function App() {
         marginRight: 'auto',
       }}
     >
-      {view !== 'main' && <BackToMenuButton onClick={goBackToMenu} />}
-      {view !== 'cart' && <ViewCartButton onClick={goToCart} cartCount={cart.length} />}
-      {view !== 'checkout' && <CheckoutButton onClick={goToCheckout} />}
+      {view !== 'main' && view !== 'exit' && <BackToMenuButton onClick={goBackToMenu} />}
+      {view !== 'cart' && view !== 'exit' && <ViewCartButton onClick={goToCart} cartCount={cart.length} />}
+      {view !== 'checkout' && view !== 'exit' && <CheckoutButton onClick={goToCheckout} />}
     </div>
   );
 
@@ -502,19 +499,13 @@ function App() {
 
       {/* Exit View */}
       {view === 'exit' && (
-        <div
-          style={{
-            textAlign: 'center',
-            marginTop: 100,
-            fontSize: '24px',
-            color: BUTTON_COLOR,
-            fontWeight: 'bold',
+        <ThankYou
+          total={total}
+          onReturnToMenu={() => {
+            setCart([]);
+            setView('main');
           }}
-        >
-          Thank you for your order!
-          <br />
-          We will notify you when it's ready.
-        </div>
+        />
       )}
     </div>
   );

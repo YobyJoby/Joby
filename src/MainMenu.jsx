@@ -84,7 +84,6 @@ export default function MainMenu() {
 
   const TAX_RATE = 0.13;
 
-  // Helper to add glow class and remove after 1 second
   const triggerGlow = (id) => {
     return new Promise((resolve) => {
       const ref = glowRefs.current[id];
@@ -100,9 +99,6 @@ export default function MainMenu() {
     });
   };
 
-  // When a menu item clicked:
-  // 1) Trigger glow for 1s
-  // 2) THEN open submenu
   const openSubMenu = async (menuItem) => {
     await triggerGlow(menuItem.id);
     setSelectedMenu(menuItem);
@@ -144,8 +140,6 @@ export default function MainMenu() {
     }
   };
 
-  // When Add to Cart button clicked in submenu view:
-  // Just add item or show prompt accordingly
   const addToCartClicked = (subItem) => {
     setSelectedSubItem(subItem);
     setSelectedModifiers([]);
@@ -180,7 +174,6 @@ export default function MainMenu() {
     setSelectedSecondModifiers([]);
   };
 
-  // Add item with modifiers to cart
   const addItemToCart = (item, modifiers, secondMods) => {
     let price = item.price;
     modifiers.forEach((mod) => {
@@ -208,7 +201,6 @@ export default function MainMenu() {
     setCart(cart.filter((item) => item.id !== id));
   };
 
-  // When View Cart clicked, glow the button for 1 second before showing cart
   const handleViewCartClick = async () => {
     await new Promise((r) => setTimeout(r, 1000));
     setView('checkout');
@@ -228,7 +220,6 @@ export default function MainMenu() {
 
   return (
     <div className="app-container" style={{ padding: 20, fontFamily: 'Arial', position: 'relative' }}>
-      {/* Copy button fixed top right */}
       <button
         style={{
           position: "fixed",
@@ -296,21 +287,47 @@ export default function MainMenu() {
                 key={menuItem.id}
                 ref={(el) => (glowRefs.current[menuItem.id] = el)}
                 onClick={() => openSubMenu(menuItem)}
+                className="menu-item"
                 style={{
                   cursor: 'pointer',
                   border: '1px solid #ccc',
                   borderRadius: 8,
                   width: 187.5,
-                  padding: 12.5,
+                  padding: 0,
                   textAlign: 'center',
                   userSelect: 'none',
                   boxShadow: '0 0 8px rgba(70,5,229,0.4)',
                   transition: 'transform 0.2s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
-                <h3 style={{ fontSize: '1.25rem', marginBottom: 12.5 }}>{menuItem.name}</h3>
+                {/* Title overlay */}
+                <h3
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    margin: 0,
+                    padding: '10px 0',
+                    backgroundColor: 'rgba(70, 5, 229, 0.7)',
+                    color: 'white',
+                    fontSize: '1.25rem',
+                    fontWeight: 'bold',
+                    userSelect: 'none',
+                    zIndex: 2,
+                  }}
+                >
+                  {menuItem.name}
+                </h3>
+
                 <img
                   src={menuItem.image}
                   alt={menuItem.name}
