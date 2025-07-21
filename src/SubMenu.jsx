@@ -1,26 +1,5 @@
-import React from 'react';
-import { SUBMENU_DATA } from './menu';
-
-export default function SubMenu({ item, onAddToCart, onBack }) {
-  const submenuItems = SUBMENU_DATA[item.id] || [];
-
-  return (
-    <div>
-      <h2>{item.name} Options</h2>
-      <button onClick={onBack}>Back</button>
-      <ul>
-        {submenuItems.map(sub => (
-          <li key={sub.id}>
-            {sub.name} - ${sub.price.toFixed(2)}{' '}
-            <button onClick={() => onAddToCart(sub)}>Add to Cart</button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}// src/SubMenu.jsx
-import React, { useState } from "react";
-import Buttons from "./Buttons"; // reusable buttons and main menu components
+import React, { useState, useRef } from "react";
+import Buttons from "./Buttons";
 import ModifierPanel from "./ModifierPanel";
 
 export default function SubMenu({
@@ -35,6 +14,7 @@ export default function SubMenu({
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedModifiers, setSelectedModifiers] = useState([]);
   const [selectedSecondModifiers, setSelectedSecondModifiers] = useState([]);
+  const glowRefs = useRef({});
 
   const handleToggleModifier = (mod) => {
     setSelectedModifiers((prev) =>
@@ -54,19 +34,37 @@ export default function SubMenu({
 
   const handleAddToCart = () => {
     if (!selectedItem) return;
+
     onAddToCart({
       ...selectedItem,
       modifiers: selectedModifiers,
       secondModifiers: selectedSecondModifiers,
       quantity: 1,
     });
+
+    // If no modifiers, apply glow effect
+    if (modifiers.length === 0 && secondModifiers.length === 0) {
+      const ref = glowRefs.current[selectedItem.id];
+      if (ref) {
+        ref.classList.add("glow");
+        setTimeout(() => ref.classList.remove("glow"), 1000);
+      }
+    }
+
     setSelectedItem(null);
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 10px", position: "relative" }}>
+    <div
+      style={{
+        maxWidth: 900,
+        margin: "0 auto",
+        padding: "20px 10px",
+        position: "relative",
+      }}
+    >
       <Buttons
         onBackToMenu={onBackToMenu}
         onGoToCart={onGoToCart}
@@ -90,26 +88,62 @@ export default function SubMenu({
         {subMenu.map((item) => (
           <div
             key={item.id}
-            onClick={() => setSelectedItem(item)}
+            ref={(el) => (glowRefs.current[item.id] = el)}
             style={{
-              cursor: "pointer",
-              border: selectedItem?.id === item.id ? "2px solid #4605e5" : "1px solid #ccc",
+              border:
+                selectedItem?.id === item.id ? "2px solid #4605e5" : "1px solid #ccc",
               borderRadius: 8,
               padding: 10,
               width: 150,
+              minHeight: 280,
               textAlign: "center",
               boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
               userSelect: "none",
+              display: "flex",
+              flexDirection: "column",
+              cursor: "default",
             }}
           >
-            <img src={item.image} alt={item.name} style={{ width: "100%", height: "auto", marginBottom: 10 }} />
-            <div>{item.name}</div>
-            <div>${item.price.toFixed(2)}</div>
+            <div
+              onClick={() => setSelectedItem(item)}
+              style={{ cursor: "pointer" }}
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                style={{ width: "100%", height: "auto", marginBottom: 10 }}
+              />
+              <div>{item.name}</div>
+              <div>${item.price.toFixed(2)}</div>
+            </div>
+
+            <button
+              onClick={() => {
+                if (modifiers.length || secondModifiers.length) {
+                  setSelectedItem(item);
+                } else {
+                  setSelectedItem(item);
+                  handleAddToCart();
+                }
+              }}
+              style={{
+                marginTop: "auto",
+                backgroundColor: '#673ab7',
+                color: 'white',
+                border: 'none',
+                borderRadius: 5,
+                cursor: 'pointer',
+                padding: '10px 20px',
+                userSelect: 'none',
+              }}
+            >
+              Add to Cart
+            </button>
           </div>
         ))}
       </div>
 
-      {selectedItem && (
+      {selectedItem && (modifiers.length > 0 || secondModifiers.length > 0) && (
         <ModifierPanel
           modifiers={modifiers}
           secondModifiers={secondModifiers}
@@ -124,17 +158,3 @@ export default function SubMenu({
     </div>
   );
 }
-
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snack Bar Menu</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-  </body>
-</html>

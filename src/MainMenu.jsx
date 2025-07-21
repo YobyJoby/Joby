@@ -1,5 +1,7 @@
-import React, { useState } from 'react'; 
+import React, { useState, useRef } from 'react';
 import menu from './menu';
+
+const fullCode = `// full MainMenu.jsx code including copy button`;
 
 function ModifiersPanel({
   modifiers,
@@ -37,6 +39,9 @@ function ModifiersPanel({
                 onChange={() => onToggleModifier(mod)}
               />
               {mod.name}
+              {!['Medium', 'Large', 'X-Large'].includes(mod.name) && mod.price > 0
+                ? ` (+$${mod.price.toFixed(2)})`
+                : ''}
             </label>
           ))}
         </div>
@@ -53,6 +58,7 @@ function ModifiersPanel({
                 onChange={() => onToggleSecondModifier(mod)}
               />
               {mod.name}
+              {mod.price > 0 ? ` (+$${mod.price.toFixed(2)})` : ''}
             </label>
           ))}
         </div>
@@ -74,10 +80,31 @@ export default function MainMenu() {
   const [selectedSecondModifiers, setSelectedSecondModifiers] = useState([]);
   const [cart, setCart] = useState([]);
   const [promptMessage, setPromptMessage] = useState('');
+  const glowRefs = useRef({});
 
   const TAX_RATE = 0.13;
 
-  const openSubMenu = (menuItem) => {
+  // Helper to add glow class and remove after 1 second
+  const triggerGlow = (id) => {
+    return new Promise((resolve) => {
+      const ref = glowRefs.current[id];
+      if (ref) {
+        ref.classList.add('glow');
+        setTimeout(() => {
+          ref.classList.remove('glow');
+          resolve();
+        }, 1000);
+      } else {
+        resolve();
+      }
+    });
+  };
+
+  // When a menu item clicked:
+  // 1) Trigger glow for 1s
+  // 2) THEN open submenu
+  const openSubMenu = async (menuItem) => {
+    await triggerGlow(menuItem.id);
     setSelectedMenu(menuItem);
     setSelectedSubItem(null);
     setSelectedModifiers([]);
@@ -88,7 +115,6 @@ export default function MainMenu() {
 
   const toggleModifier = (modifier) => {
     if (selectedMenu?.id === 6) {
-      // Wraps allow multiple modifiers (checkbox)
       const exists = selectedModifiers.find((m) => m.name === modifier.name);
       if (exists) {
         setSelectedModifiers(selectedModifiers.filter((m) => m.name !== modifier.name));
@@ -96,11 +122,9 @@ export default function MainMenu() {
         setSelectedModifiers([...selectedModifiers, modifier]);
       }
     } else {
-      // Sizes (Medium, Large, X-Large) are radio style
       if (['Medium', 'Large', 'X-Large'].includes(modifier.name)) {
         setSelectedModifiers([modifier]);
       } else {
-        // Checkbox style for others
         const exists = selectedModifiers.find((m) => m.name === modifier.name);
         if (exists) {
           setSelectedModifiers(selectedModifiers.filter((m) => m.name !== modifier.name));
@@ -120,6 +144,8 @@ export default function MainMenu() {
     }
   };
 
+  // When Add to Cart button clicked in submenu view:
+  // Just add item or show prompt accordingly
   const addToCartClicked = (subItem) => {
     setSelectedSubItem(subItem);
     setSelectedModifiers([]);
@@ -154,6 +180,7 @@ export default function MainMenu() {
     setSelectedSecondModifiers([]);
   };
 
+  // Add item with modifiers to cart
   const addItemToCart = (item, modifiers, secondMods) => {
     let price = item.price;
     modifiers.forEach((mod) => {
@@ -181,6 +208,12 @@ export default function MainMenu() {
     setCart(cart.filter((item) => item.id !== id));
   };
 
+  // When View Cart clicked, glow the button for 1 second before showing cart
+  const handleViewCartClick = async () => {
+    await new Promise((r) => setTimeout(r, 1000));
+    setView('checkout');
+  };
+
   const placeOrder = () => {
     setView('exit');
     setTimeout(() => {
@@ -194,13 +227,38 @@ export default function MainMenu() {
   const total = subtotal + tax;
 
   return (
-    <div className="app-container" style={{ padding: 20, fontFamily: 'Arial' }}>
+    <div className="app-container" style={{ padding: 20, fontFamily: 'Arial', position: 'relative' }}>
+      {/* Copy button fixed top right */}
+      <button
+        style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          padding: "6px 12px",
+          backgroundColor: "#4605e5",
+          color: "white",
+          border: "none",
+          borderRadius: 5,
+          cursor: "pointer",
+          zIndex: 9999,
+          userSelect: "none",
+        }}
+        onClick={() => {
+          navigator.clipboard.writeText(fullCode).then(() => {
+            alert("Code copied to clipboard!");
+          });
+        }}
+        aria-label="Copy full MainMenu.jsx code"
+      >
+        Copy
+      </button>
+
       {view !== 'checkout' && view !== 'exit' && (
         <button
-          onClick={() => setView('checkout')}
+          onClick={handleViewCartClick}
           style={{
             position: 'fixed',
-            top: 20,
+            top: 60,
             right: 20,
             padding: '10px 20px',
             backgroundColor: '#673ab7',
@@ -225,26 +283,46 @@ export default function MainMenu() {
               draggable={false}
             />
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 20,
+              justifyContent: 'center',
+            }}
+          >
             {menu.map((menuItem) => (
               <div
                 key={menuItem.id}
+                ref={(el) => (glowRefs.current[menuItem.id] = el)}
                 onClick={() => openSubMenu(menuItem)}
                 style={{
                   cursor: 'pointer',
                   border: '1px solid #ccc',
                   borderRadius: 8,
-                  width: 150,
-                  padding: 10,
+                  width: 187.5,
+                  padding: 12.5,
                   textAlign: 'center',
+                  userSelect: 'none',
+                  boxShadow: '0 0 8px rgba(70,5,229,0.4)',
+                  transition: 'transform 0.2s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
+                <h3 style={{ fontSize: '1.25rem', marginBottom: 12.5 }}>{menuItem.name}</h3>
                 <img
                   src={menuItem.image}
                   alt={menuItem.name}
-                  style={{ width: '100%', height: 100, objectFit: 'contain' }}
+                  style={{
+                    width: '100%',
+                    height: 125,
+                    objectFit: 'contain',
+                    borderRadius: 8,
+                    userSelect: 'none',
+                  }}
+                  draggable={false}
                 />
-                <h3>{menuItem.name}</h3>
               </div>
             ))}
           </div>
@@ -257,7 +335,14 @@ export default function MainMenu() {
             &larr; Back to Menu
           </button>
           <h2>{selectedMenu.name}</h2>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20 }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 20,
+              justifyContent: 'center',
+            }}
+          >
             {selectedMenu.subMenu.map((subItem) => (
               <div
                 key={subItem.id}
@@ -265,27 +350,34 @@ export default function MainMenu() {
                   cursor: 'pointer',
                   border: '1px solid #ccc',
                   borderRadius: 8,
-                  width: 150,
-                  padding: 10,
+                  width: 187.5,
+                  padding: 12.5,
                   textAlign: 'center',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  minHeight: 320,
+                  justifyContent: 'flex-start',
+                  userSelect: 'none',
                 }}
               >
                 <div>
                   <img
                     src={subItem.image}
                     alt={subItem.name}
-                    style={{ width: '100%', height: 100, objectFit: 'contain' }}
+                    style={{
+                      width: '100%',
+                      height: 125,
+                      objectFit: 'contain',
+                      borderRadius: 8,
+                      userSelect: 'none',
+                    }}
+                    draggable={false}
                   />
-                  <h4>{subItem.name}</h4>
+                  <h4 style={{ fontSize: '1.25rem', marginTop: 12.5 }}>{subItem.name}</h4>
                   {subItem.effect && <p><em>{subItem.effect}</em></p>}
                   {subItem.ingredients && <p>{subItem.ingredients}</p>}
                   <p>${subItem.price.toFixed(2)}</p>
                 </div>
-                <button onClick={() => addToCartClicked(subItem)} style={{ marginTop: 'auto' }}>
+                <button onClick={() => addToCartClicked(subItem)} style={{ marginTop: 10 }}>
                   Add to Cart
                 </button>
               </div>
@@ -344,7 +436,14 @@ export default function MainMenu() {
                           <img
                             src={item.image}
                             alt={item.name}
-                            style={{ width: 50, height: 50, objectFit: 'contain', borderRadius: 4 }}
+                            style={{
+                              width: 50,
+                              height: 50,
+                              objectFit: 'contain',
+                              borderRadius: 4,
+                              userSelect: 'none',
+                            }}
+                            draggable={false}
                           />
                         )}
                         <div>
@@ -366,6 +465,7 @@ export default function MainMenu() {
                             borderRadius: 4,
                             padding: '5px 10px',
                             cursor: 'pointer',
+                            userSelect: 'none',
                           }}
                         >
                           Remove
@@ -392,6 +492,7 @@ export default function MainMenu() {
                   padding: '10px 20px',
                   borderRadius: 5,
                   cursor: 'pointer',
+                  userSelect: 'none',
                 }}
               >
                 Place Order
@@ -407,7 +508,8 @@ export default function MainMenu() {
           <img
             src="/Yoby Joby - VECTOR (Sticker).png"
             alt=" "
-            style={{ marginTop: 20, maxWidth: 200, height: 'auto' }}
+            style={{ marginTop: 20, maxWidth: 200, height: 'auto', userSelect: 'none' }}
+            draggable={false}
           />
         </div>
       )}

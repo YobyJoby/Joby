@@ -1,4 +1,4 @@
-ModifierPanel.jsx - // src/ModifierPanel.jsx
+// src/ModifierPanel.jsx
 import React from "react";
 
 export default function ModifierPanel({
@@ -11,6 +11,9 @@ export default function ModifierPanel({
   onConfirm,
   onCancel,
 }) {
+  // Helper function for skipping upcharge on specific names
+  const skipUpchargeNames = ["Medium", "Large", "X-Large"];
+
   return (
     <div
       style={{
@@ -27,9 +30,14 @@ export default function ModifierPanel({
       {modifiers.length > 0 && (
         <div style={{ marginBottom: 15 }}>
           <strong>Modifiers:</strong>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}
+          >
             {modifiers.map((mod) => {
               const selected = selectedModifiers.some((m) => m.name === mod.name);
+              // Check if mod.name is one of the skip names
+              const showUpcharge =
+                mod.price > 0 && !skipUpchargeNames.includes(mod.name);
               return (
                 <button
                   key={mod.name}
@@ -42,7 +50,7 @@ export default function ModifierPanel({
                     cursor: "pointer",
                   }}
                 >
-                  {mod.name} {mod.price > 0 ? + $${mod.price.toFixed(2)} : ""}
+                  {mod.name} {showUpcharge ? `+ $${mod.price.toFixed(2)}` : ""}
                 </button>
               );
             })}
@@ -53,9 +61,13 @@ export default function ModifierPanel({
       {secondModifiers.length > 0 && (
         <div style={{ marginBottom: 15 }}>
           <strong>Extras:</strong>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}>
+          <div
+            style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}
+          >
             {secondModifiers.map((mod) => {
-              const selected = selectedSecondModifiers.some((m) => m.name === mod.name);
+              const selected = selectedSecondModifiers.some(
+                (m) => m.name === mod.name
+              );
               return (
                 <button
                   key={mod.name}
@@ -68,7 +80,7 @@ export default function ModifierPanel({
                     cursor: "pointer",
                   }}
                 >
-                  {mod.name} {mod.price > 0 ? + $${mod.price.toFixed(2)} : ""}
+                  {mod.name} {mod.price > 0 ? `+ $${mod.price.toFixed(2)}` : ""}
                 </button>
               );
             })}
@@ -76,7 +88,13 @@ export default function ModifierPanel({
         </div>
       )}
 
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: 20,
+        }}
+      >
         <button
           onClick={onCancel}
           style={{

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MainMenu, ViewCartButton, BackToMenuButton, CheckoutButton } from './Buttons'; // added buttons import
+import { MainMenu, ViewCartButton, BackToMenuButton, CheckoutButton } from './Buttons';
 import menu from './menu';
 import Cart from './Cart';
 import Checkout from './Checkout';
@@ -101,23 +101,29 @@ function App() {
       price += mod.price || 0;
     });
 
-    const existingIndex = cart.findIndex((cartItem) =>
-      cartItem.name === item.name &&
-      JSON.stringify(cartItem.modifiers) === JSON.stringify(modifiers.map((m) => m.name)) &&
-      JSON.stringify(cartItem.secondModifiers) === JSON.stringify(secondMods.map((m) => m.name))
+    const modifiersNames = modifiers.map((m) => m.name);
+    const secondModsNames = secondMods.map((m) => m.name);
+
+    const existingIndex = cart.findIndex(
+      (cartItem) =>
+        cartItem.name === item.name &&
+        JSON.stringify(cartItem.modifiers) === JSON.stringify(modifiersNames) &&
+        JSON.stringify(cartItem.secondModifiers) === JSON.stringify(secondModsNames)
     );
 
     if (existingIndex !== -1) {
+      // Increment quantity if item exists
       const updatedCart = [...cart];
       updatedCart[existingIndex].quantity += 1;
       setCart(updatedCart);
     } else {
+      // Add new item to cart
       const cartItem = {
         id: `${item.id}-${Date.now()}`,
         name: item.name,
         basePrice: item.price,
-        modifiers: modifiers.map((m) => m.name),
-        secondModifiers: secondMods.map((m) => m.name),
+        modifiers: modifiersNames,
+        secondModifiers: secondModsNames,
         price,
         image: item.image,
         quantity: 1,
@@ -129,6 +135,17 @@ function App() {
   // Remove item from cart by id
   const removeFromCart = (id) => {
     setCart(cart.filter((item) => item.id !== id));
+  };
+
+  // Update quantity (works with + and - buttons)
+  const updateQuantity = (id, newQuantity) => {
+    if (newQuantity <= 0) {
+      removeFromCart(id);
+    } else {
+      setCart((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
+      );
+    }
   };
 
   // Place order and reset cart after delay
@@ -154,12 +171,14 @@ function App() {
   const renderTopRightButtons = () => (
     <div
       style={{
-        position: 'fixed',
-        top: 20,
-        right: 20,
         display: 'flex',
         gap: 10,
-        zIndex: 1000,
+        justifyContent: 'flex-end',
+        marginBottom: 20,
+        paddingRight: 20,
+        maxWidth: 1260,
+        marginLeft: 'auto',
+        marginRight: 'auto',
       }}
     >
       {view !== 'main' && <BackToMenuButton onClick={goBackToMenu} />}
@@ -218,9 +237,7 @@ function App() {
             {selectedMenu.subMenu.map((subItem) => (
               <div
                 key={subItem.id}
-                onClick={() => addToCartClicked(subItem)}
                 style={{
-                  cursor: 'pointer',
                   border: '1px solid #ccc',
                   borderRadius: '8px',
                   width: '150px',
@@ -229,42 +246,74 @@ function App() {
                   boxSizing: 'border-box',
                   position: 'relative',
                   userSelect: 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
                 }}
               >
-                <img
-                  src={subItem.image}
-                  alt={subItem.name}
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                  draggable={false}
-                />
-                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>{subItem.name}</div>
-                {subItem.effect && (
-                  <div
-                    style={{
-                      fontSize: '10px',
-                      color: 'gray',
-                      marginTop: '4px',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {subItem.effect}
+                <div onClick={() => addToCartClicked(subItem)} style={{ cursor: 'pointer' }}>
+                  <img
+                    src={subItem.image}
+                    alt={subItem.name}
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                    draggable={false}
+                  />
+                  <div style={{ fontWeight: 'bold', marginTop: '6px' }}>{subItem.name}</div>
+                  {subItem.effect && (
+                    <div
+                      style={{
+                        fontSize: '10px',
+                        color: 'gray',
+                        marginTop: '4px',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {subItem.effect}
+                    </div>
+                  )}
+                  {subItem.ingredients && (
+                    <div
+                      style={{
+                        fontSize: '10px',
+                        color: 'gray',
+                        marginTop: '2px',
+                        fontStyle: 'italic',
+                      }}
+                    >
+                      {subItem.ingredients}
+                    </div>
+                  )}
+                  <div style={{ marginTop: '6px', fontWeight: 'bold' }}>
+                    ${subItem.price.toFixed(2)}
                   </div>
-                )}
-                {subItem.ingredients && (
-                  <div
-                    style={{
-                      fontSize: '10px',
-                      color: 'gray',
-                      marginTop: '2px',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {subItem.ingredients}
-                  </div>
-                )}
-                <div style={{ marginTop: '6px', fontWeight: 'bold' }}>
-                  ${subItem.price.toFixed(2)}
                 </div>
+                <button
+                  className="add-to-cart-btn"
+                  onClick={() => addToCartClicked(subItem)}
+                  style={{
+                    marginTop: 'auto',
+                    padding: '7.5px 0',
+                    fontSize: '0.825em',
+                    width: '75%',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                    backgroundColor: 'rgba(70, 5, 229, 0.75)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'rgba(126, 87, 194, 0.75)')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'rgba(70, 5, 229, 0.75)')
+                  }
+                >
+                  Add to Cart
+                </button>
               </div>
             ))}
           </div>
@@ -325,7 +374,10 @@ function App() {
                             onChange={() => toggleModifier(mod)}
                             style={{ marginRight: '8px', cursor: 'pointer' }}
                           />
-                          {mod.name}
+                          {mod.name}{' '}
+                          {mod.price > 0 && !['Medium', 'Large', 'X-Large'].includes(mod.name)
+                            ? `+ $${mod.price.toFixed(2)}`
+                            : ''}
                         </label>
                       );
                     })}
@@ -391,7 +443,8 @@ function App() {
                               onChange={() => toggleSecondModifier(mod)}
                               style={{ marginRight: '8px', cursor: 'pointer' }}
                             />
-                            {mod.name}
+                            {mod.name}{' '}
+                            {mod.price > 0 ? `+ $${mod.price.toFixed(2)}` : ''}
                           </label>
                         );
                       })}
@@ -431,6 +484,7 @@ function App() {
           onBackToMenu={goBackToMenu}
           onGoToCheckout={goToCheckout}
           onRemoveFromCart={removeFromCart}
+          onUpdateQuantity={updateQuantity} // pass updateQuantity to Cart
         />
       )}
 
