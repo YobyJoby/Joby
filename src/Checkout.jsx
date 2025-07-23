@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import emailjs from "@emailjs/browser";
 
 const BUTTON_COLOR = "#4605e5";
 
@@ -12,6 +13,50 @@ export default function Checkout({
   onRemoveFromCart,
   onUpdateQuantity,
 }) {
+  const [isSending, setIsSending] = useState(false);
+
+  const handleEmailOrder = () => {
+    if (isSending) return; // prevent multiple clicks
+
+    const checkoutDetails = `
+ORDER SUMMARY:\n\n${cart
+      .map(
+        (item) =>
+          `• ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(
+            ", "
+          )}\n  Extras: ${item.secondModifiers.join(", ")}\n  Total: $${(
+            item.price * item.quantity
+          ).toFixed(2)}\n`
+      )
+      .join("\n")}
+\nSubtotal: $${subtotal.toFixed(2)}
+\nTax (13%): $${tax.toFixed(2)}
+\nTotal: $${total.toFixed(2)}
+`;
+
+    setIsSending(true);
+
+    emailjs
+      .send(
+        "service_v822ir4", // your updated service ID
+        "template_prnbbf1", // your updated template ID here
+        {
+          message: checkoutDetails,
+        },
+        "7q-MiD1gTt9IMkSeb" // your public key stays the same
+      )
+      .then(
+        () => {
+          setIsSending(false);
+          placeOrder(); // proceed to thank you page or next view
+        },
+        (error) => {
+          setIsSending(false);
+          alert("Failed to send email:\n" + error.text);
+        }
+      );
+  };
+
   return (
     <div
       style={{
@@ -184,23 +229,28 @@ export default function Checkout({
 
           <div style={{ textAlign: "center" }}>
             <button
-              onClick={placeOrder}
+              onClick={handleEmailOrder}
+              disabled={isSending}
               style={{
-                backgroundColor: BUTTON_COLOR,
+                backgroundColor: isSending ? "#888" : BUTTON_COLOR,
                 color: "white",
                 border: "none",
                 padding: "14px 40px",
                 borderRadius: 8,
                 fontSize: 20,
                 fontWeight: "bold",
-                cursor: "pointer",
+                cursor: isSending ? "not-allowed" : "pointer",
                 userSelect: "none",
                 transition: "background-color 0.3s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#5a04c2")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = BUTTON_COLOR)}
+              onMouseEnter={(e) => {
+                if (!isSending) e.currentTarget.style.backgroundColor = "#5a04c2";
+              }}
+              onMouseLeave={(e) => {
+                if (!isSending) e.currentTarget.style.backgroundColor = BUTTON_COLOR;
+              }}
             >
-              Place Order
+              {isSending ? "Sending Order..." : "Place Order"}
             </button>
           </div>
         </>

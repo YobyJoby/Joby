@@ -494,6 +494,9 @@ function App() {
           total={total}
           placeOrder={placeOrder}
           BUTTON_COLOR={BUTTON_COLOR}
+          onBackToMenu={goBackToMenu}
+          onRemoveFromCart={removeFromCart}
+          onUpdateQuantity={updateQuantity}
         />
       )}
 

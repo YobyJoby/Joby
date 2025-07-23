@@ -75,7 +75,7 @@ const menu = [
         name: 'Mango Banana Island',
         price: 6.48,
         effect: 'Vitamin C, Skin Regeneration, Energy',
-        ingredients: 'Mango, Banana, Pinapple, Coconut milk',
+        ingredients: 'Mango, Banana, Pineapple, Coconut milk',
         image: '/Yoby - Menu - Smoothie 4.png',
       },
       {
@@ -91,7 +91,7 @@ const menu = [
         name: 'Zesty Green Detox',
         price: 6.99,
         effect: 'Detoxification, Inflammation Relief',
-        ingredients: 'Avocado, Spinach, Cabbage',
+        ingredients: 'Avocado, Spinach, Cabbage, Broccoli',
         image: '/Yoby - Menu - Smoothie 6.png',
       },
       {
@@ -148,13 +148,13 @@ const menu = [
     name: 'Wraps',
     subMenu: [
       { id: 601, name: 'Garden Chicken', price: 7.99, image: '/Yoby - Menu - wraps 1.png' },
-      { id: 602, name: 'Signature Korean', price: 8.99, image: '/Yoby - Menu - wraps 2.png' },
+      { id: 602, name: 'Signature Korean', price: 7.99, image: '/Yoby - Menu - wraps 2.png' },
       { id: 603, name: 'Greek', price: 7.99, image: '/Yoby - Menu - wraps 1.png' },
     ],
     modifiers: [
       { name: 'No, thanks', price: 0 },
-      { name: 'Extra Cheese', price: 1.5 },
-      { name: 'Extra Chicken Breast', price: 2.5 },
+      { name: 'Extra Cheese', price: 1.00 },
+      { name: 'Extra Chicken Breast', price: 2.50 },
     ],
     image: '/Yoby - Menu - wraps ICON.png',
   },
@@ -162,8 +162,8 @@ const menu = [
     id: 7,
     name: 'Rolls',
     subMenu: [
-      { id: 701, name: 'Tuna Kimbap', price: 6.5, image: '/Yoby - Menu - rolls 1.png' },
-      { id: 702, name: 'California Roll', price: 7.0, image: '/Yoby - Menu - rolls 2.png' },
+      { id: 701, name: 'Tuna Kimbap', price: 8.99, image: '/Yoby - Menu - rolls 1.png' },
+      { id: 702, name: 'California Roll', price: 7.99, image: '/Yoby - Menu - rolls 2.png' },
     ],
     modifiers: [],
     image: '/Yoby - Menu - rolls ICON.png',

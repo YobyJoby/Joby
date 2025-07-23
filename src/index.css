@@ -3,14 +3,14 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  color-scheme: light;
 }
 
 a {
@@ -24,14 +24,16 @@ a:hover {
 
 body {
   margin: 0;
-  display: block; /* keep this for centering */
+  display: block;
   min-width: 320px;
   min-height: 100vh;
+  background-color: white;
+  color: black;
 }
 
 /* Add this to increase max-width for the container holding cart and checkout */
 .app-container {
-  max-width: calc(700px + 300px); /* original 700px + 300px wider */
+  max-width: calc(700px + 300px);
   margin-left: auto;
   margin-right: auto;
 }
@@ -120,7 +122,7 @@ button:focus-visible {
 /* --- MENU ITEM STYLES FOR TITLE OVERLAY --- */
 
 .menu-item {
-  position: relative;   /* for absolute positioning of title */
+  position: relative;
   width: 187.5px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -148,13 +150,13 @@ button:focus-visible {
 }
 
 .menu-item h3 {
-  position: absolute;        /* Overlay on top */
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
   margin: 0;
   padding: 6px 10px;
-  background-color: rgba(0, 0, 0, 0.6);  /* Dark transparent background */
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
