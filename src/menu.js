@@ -10,8 +10,7 @@ const menu = [
     ],
     modifiers: [
       { name: 'Medium', price: 0 },
-      { name: 'Large', price: 0.85 },
-      { name: 'X-Large', price: 1.80 },
+      { name: 'Large', price: 0.85 }
     ],
     image: '/Yoby - Menu - bubble coffee ICON.png',
   },
@@ -19,21 +18,20 @@ const menu = [
     id: 2,
     name: 'Bubble Tea',
     subMenu: [
-      { id: 201, name: 'Brown Sugar Milk Bubble Tea', price: 6.99, image: '/Yoby - Menu - Bubble Tea 1.png' },
-      { id: 202, name: 'Smooth Taro Milk Bubble Tea', price: 6.99, image: '/Yoby - Menu - Bubble Tea 2.png' },
-      { id: 203, name: 'Winter Melon Milk Bubble Tea', price: 6.48, image: '/Yoby - Menu - Bubble Tea 3.png' },
-      { id: 204, name: 'Jasmine Milk Bubble Tea', price: 6.48, image: '/Yoby - Menu - Bubble Tea 4.png' },
-      { id: 205, name: 'Grapefruit Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 5.png' },
-      { id: 206, name: 'Mango Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 6.png' },
-      { id: 207, name: 'Orange Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 7.png' },
-      { id: 208, name: 'Peach Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 8.png' },
-      { id: 209, name: 'Grape Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 9.png' },
-      { id: 210, name: 'Passion Fruit Bubble Tea', price: 6.80, image: '/Yoby - Menu - Bubble Tea 10.png' },
+      { id: 201, name: 'Brown Sugar Milk Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 1.png' },
+      { id: 202, name: 'Smooth Taro Milk Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 2.png' },
+      { id: 203, name: 'Winter Melon Milk Bubble Tea', price: 6.50, image: '/Yoby - Menu - Bubble Tea 3.png' },
+      { id: 204, name: 'Jasmine Milk Bubble Tea', price: 6.50, image: '/Yoby - Menu - Bubble Tea 4.png' },
+      { id: 205, name: 'Grapefruit Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 5.png' },
+      { id: 206, name: 'Mango Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 6.png' },
+      { id: 207, name: 'Orange Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 7.png' },
+      { id: 208, name: 'Peach Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 8.png' },
+      { id: 209, name: 'Grape Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 9.png' },
+      { id: 210, name: 'Passion Fruit Bubble Tea', price: 7.00, image: '/Yoby - Menu - Bubble Tea 10.png' },
     ],
     modifiers: [
       { name: 'Medium', price: 0 },
-      { name: 'Large', price: 1.00 },
-      { name: 'X-Large', price: 2.00 },
+      { name: 'Large', price: 1.00 }
     ],
     secondModifiers: [
       { name: 'Add Protein', price: 1.50 },
@@ -105,8 +103,7 @@ const menu = [
     ],
     modifiers: [
       { name: 'Medium', price: 0 },
-      { name: 'Large', price: 1.00 },
-      { name: 'X-Large', price: 2.00 },
+      { name: 'Large', price: 1.00 }
     ],
     secondModifiers: [
       { name: 'Add Protein', price: 1.50 },
@@ -119,15 +116,14 @@ const menu = [
     id: 4,
     name: 'Iced Drinks',
     subMenu: [
-      { id: 401, name: 'Iced Tea', price: 4.49, image: '/Yoby - Menu - iced drinks 1.png' },
-      { id: 402, name: 'Iced Coffee', price: 4.49, image: '/Yoby - Menu - iced drinks 2.png' },
-      { id: 403, name: 'Lemon Slushy', price: 4.49, image: '/Yoby - Menu - iced drinks 3.png' },
-      { id: 404, name: 'Berry Slushy', price: 4.49, image: '/Yoby - Menu - iced drinks 4.png' },
+      { id: 401, name: 'Iced Tea', price: 4.50, image: '/Yoby - Menu - iced drinks 1.png' },
+      { id: 402, name: 'Iced Coffee', price: 4.50, image: '/Yoby - Menu - iced drinks 2.png' },
+      { id: 403, name: 'Lemon Slushy', price: 4.50, image: '/Yoby - Menu - iced drinks 3.png' },
+      { id: 404, name: 'Berry Slushy', price: 4.50, image: '/Yoby - Menu - iced drinks 4.png' },
     ],
     modifiers: [
       { name: 'Medium', price: 0 },
-      { name: 'Large', price: 1.00 },
-      { name: 'X-Large', price: 2.00 },
+      { name: 'Large', price: 1.00 }
     ],
     image: '/Yoby - Menu - iced drinks ICON.png',
   },
@@ -147,9 +143,9 @@ const menu = [
     id: 6,
     name: 'Wraps',
     subMenu: [
-      { id: 601, name: 'Garden Chicken', price: 7.99, image: '/Yoby - Menu - wraps 1.png' },
-      { id: 602, name: 'Signature Korean', price: 7.99, image: '/Yoby - Menu - wraps 2.png' },
-      { id: 603, name: 'Greek', price: 7.99, image: '/Yoby - Menu - wraps 1.png' },
+      { id: 601, name: 'Garden Chicken', price: 8.00, image: '/Yoby - Menu - wraps 1.png' },
+      { id: 602, name: 'Signature Korean', price: 8.00, image: '/Yoby - Menu - wraps 2.png' },
+      { id: 603, name: 'Greek', price: 8.00, image: '/Yoby - Menu - wraps 1.png' },
     ],
     modifiers: [
       { name: 'No, thanks', price: 0 },
@@ -162,11 +158,43 @@ const menu = [
     id: 7,
     name: 'Rolls',
     subMenu: [
-      { id: 701, name: 'Tuna Kimbap', price: 8.99, image: '/Yoby - Menu - rolls 1.png' },
-      { id: 702, name: 'California Roll', price: 7.99, image: '/Yoby - Menu - rolls 2.png' },
+      { id: 701, name: 'Tuna Kimbap', price: 9.00, image: '/Yoby - Menu - rolls 1.png' },
+      { id: 702, name: 'California Roll', price: 9.00, image: '/Yoby - Menu - rolls 2.png' },
     ],
     modifiers: [],
     image: '/Yoby - Menu - rolls ICON.png',
+  },
+  {
+    id: 8,
+    name: 'Delicious Bites',
+    subMenu: [
+      {
+        id: 801,
+        name: 'Prosciutto Egg Cheese Croissant',
+        price: 8.00,
+        image: '/Yoby - Menu - Delicious Snacks 1.png',
+        modifiers: [
+          { name: 'Prosciutto', price: 0 },
+          { name: 'Capicola', price: 1.00 },
+          { name: 'Mortadella', price: 1.00 },
+        ],
+      },
+      {
+        id: 802,
+        name: 'Greek Granola Yogurt Bowl',
+        price: 7.00,
+        image: '/Yoby - Menu - Delicious Snacks 2.png',
+        modifiers: [
+          { name: 'Blueberry', price: 0, image: '/YJ - Greek Yogurt Pic - Blueberry.png' },
+          { name: 'Strawberry', price: 0, image: '/YJ - Greek Yogurt Pic Strawberry.png' },
+        ],
+      },
+      { id: 803, name: 'Big Salad', price: 9.00, image: '/Yoby - Menu - Delicious Snacks 3.png' },
+      { id: 804, name: 'Big Chicken Salad Bowl', price: 9.00, image: '/Yoby - Menu - Delicious Snacks 4.png' },
+      { id: 805, name: 'Sausage Scrambled Egg Box', price: 8.00, image: '/Yoby - Menu - Delicious Snacks 5.png' },
+    ],
+    modifiers: [],
+    image: '/Yoby - Menu - Delicious Snacks ICON.png',
   },
 ];
 

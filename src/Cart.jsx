@@ -22,7 +22,9 @@ export default function Cart({
         boxSizing: "border-box",
       }}
     >
-      <h2 style={{ textAlign: "center", color: BUTTON_COLOR, marginBottom: 30 }}>Your Cart</h2>
+      <h2 style={{ textAlign: "center", color: BUTTON_COLOR, marginBottom: 30 }}>
+        Your Cart
+      </h2>
 
       {cartItems.length === 0 ? (
         <p style={{ textAlign: "center", fontSize: 20 }}>Your cart is empty.</p>
@@ -42,11 +44,11 @@ export default function Cart({
                 key={item.id}
                 style={{
                   display: "flex",
-                  border: `1px solid ${BUTTON_COLOR}`,
-                  borderRadius: 8,
-                  padding: 10,
                   alignItems: "center",
                   gap: 15,
+                  padding: 10,
+                  border: `1px solid ${BUTTON_COLOR}`,
+                  borderRadius: 8,
                   backgroundColor: "#fafafa",
                   width: "100%",
                   boxSizing: "border-box",
@@ -55,7 +57,12 @@ export default function Cart({
                 <img
                   src={item.image}
                   alt={item.name}
-                  style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 6 }}
+                  style={{
+                    width: 90,
+                    height: 90,
+                    objectFit: "cover",
+                    borderRadius: 6,
+                  }}
                   draggable={false}
                 />
 

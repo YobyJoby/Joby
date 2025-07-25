@@ -16,39 +16,33 @@ export default function Checkout({
   const [isSending, setIsSending] = useState(false);
 
   const handleEmailOrder = () => {
-    if (isSending) return; // prevent multiple clicks
+    if (isSending) return;
 
-    const checkoutDetails = `
-ORDER SUMMARY:\n\n${cart
+    const checkoutDetails = `ORDER SUMMARY:\n\n${cart
       .map(
         (item) =>
-          `• ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(
-            ", "
-          )}\n  Extras: ${item.secondModifiers.join(", ")}\n  Total: $${(
+          `• ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(", ")}\n  Extras: ${item.secondModifiers.join(", ")}\n  Total: $${(
             item.price * item.quantity
           ).toFixed(2)}\n`
       )
       .join("\n")}
 \nSubtotal: $${subtotal.toFixed(2)}
 \nTax (13%): $${tax.toFixed(2)}
-\nTotal: $${total.toFixed(2)}
-`;
+\nTotal: $${total.toFixed(2)}`;
 
     setIsSending(true);
 
     emailjs
       .send(
-        "service_v822ir4", // your updated service ID
-        "template_prnbbf1", // your updated template ID here
-        {
-          message: checkoutDetails,
-        },
-        "7q-MiD1gTt9IMkSeb" // your public key stays the same
+        "service_v822ir4",
+        "template_prnbbf1",
+        { message: checkoutDetails },
+        "7q-MiD1gTt9IMkSeb"
       )
       .then(
         () => {
           setIsSending(false);
-          placeOrder(); // proceed to thank you page or next view
+          placeOrder();
         },
         (error) => {
           setIsSending(false);
@@ -90,11 +84,11 @@ ORDER SUMMARY:\n\n${cart
                 key={item.id}
                 style={{
                   display: "flex",
-                  border: `1px solid ${BUTTON_COLOR}`,
-                  borderRadius: 8,
-                  padding: 10,
                   alignItems: "center",
                   gap: 15,
+                  padding: 10,
+                  border: `1px solid ${BUTTON_COLOR}`,
+                  borderRadius: 8,
                   backgroundColor: "#fafafa",
                   width: "100%",
                   boxSizing: "border-box",
@@ -103,7 +97,12 @@ ORDER SUMMARY:\n\n${cart
                 <img
                   src={item.image}
                   alt={item.name}
-                  style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 6 }}
+                  style={{
+                    width: 90,
+                    height: 90,
+                    objectFit: "cover",
+                    borderRadius: 6,
+                  }}
                   draggable={false}
                 />
 
@@ -194,34 +193,26 @@ ORDER SUMMARY:\n\n${cart
               fontSize: 20,
               textAlign: "center",
               marginBottom: 10,
-              width: "100%",
-              boxSizing: "border-box",
             }}
           >
             Subtotal: ${subtotal.toFixed(2)}
           </div>
-
           <div
             style={{
               fontWeight: "bold",
               fontSize: 20,
               textAlign: "center",
               marginBottom: 10,
-              width: "100%",
-              boxSizing: "border-box",
             }}
           >
             Tax (13%): ${tax.toFixed(2)}
           </div>
-
           <div
             style={{
               fontWeight: "bold",
               fontSize: 24,
               textAlign: "center",
               marginBottom: 30,
-              width: "100%",
-              boxSizing: "border-box",
             }}
           >
             Total: ${total.toFixed(2)}

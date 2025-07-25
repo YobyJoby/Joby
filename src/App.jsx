@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+// src/App.jsx
+import React, { useState, useEffect } from 'react';
 import { MainMenu, ViewCartButton, BackToMenuButton, CheckoutButton } from './Buttons';
 import menu from './menu';
 import Cart from './Cart';
 import Checkout from './Checkout';
-import ThankYou from './ThankYou'; // Import the ThankYou component
+import ThankYou from './ThankYou';
 
 const TAX_RATE = 0.13;
 const BUTTON_COLOR = '#4605e5';
 
 function App() {
-  const [view, setView] = useState('main'); // 'main' | 'submenu' | 'cart' | 'checkout' | 'exit'
+  const [view, setView] = useState('main'); // 'main' | 'submenu' | 'cart' | 'checkout' | 'exit' | 'added'
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [selectedSubItem, setSelectedSubItem] = useState(null);
   const [selectedModifiers, setSelectedModifiers] = useState([]);
@@ -17,7 +18,6 @@ function App() {
   const [cart, setCart] = useState([]);
   const [promptMessage, setPromptMessage] = useState('');
 
-  // Open submenu for a main menu category
   const openSubMenu = (menuItem) => {
     setSelectedMenu(menuItem);
     setSelectedSubItem(null);
@@ -27,9 +27,9 @@ function App() {
     setView('submenu');
   };
 
-  // Toggle a modifier (checkbox or radio style logic)
   const toggleModifier = (modifier) => {
     if (selectedMenu?.id === 6) {
+      // Allow multiple proteins; first free, others +$1 (logic elsewhere)
       const exists = selectedModifiers.find((m) => m.name === modifier.name);
       if (exists) {
         setSelectedModifiers(selectedModifiers.filter((m) => m.name !== modifier.name));
@@ -50,7 +50,6 @@ function App() {
     }
   };
 
-  // Toggle second modifiers (always checkboxes)
   const toggleSecondModifier = (modifier) => {
     const exists = selectedSecondModifiers.find((m) => m.name === modifier.name);
     if (exists) {
@@ -60,24 +59,26 @@ function App() {
     }
   };
 
-  // When user clicks on submenu item to add to cart or choose modifiers
   const addToCartClicked = (subItem) => {
-    // If selectedMenu has no modifiers, add directly to cart
-    if (!selectedMenu.modifiers || selectedMenu.modifiers.length === 0) {
+    const itemModifiers = subItem.modifiers ?? selectedMenu.modifiers ?? [];
+
+    if (!itemModifiers || itemModifiers.length === 0) {
       addItemToCart(subItem, [], []);
-      setView('main');
+      setView('added');
     } else {
       setSelectedSubItem(subItem);
       setSelectedModifiers([]);
       setSelectedSecondModifiers([]);
       setPromptMessage('');
+      setView('submenu');
     }
   };
 
-  // Confirm adding item with modifiers to cart
   const confirmSelection = () => {
+    const currentModifiers = selectedSubItem?.modifiers ?? selectedMenu?.modifiers ?? [];
+
     if (
-      selectedMenu?.modifiers.length > 0 &&
+      currentModifiers.length > 0 &&
       ![6, 7].includes(selectedMenu.id) &&
       selectedModifiers.length === 0
     ) {
@@ -89,15 +90,32 @@ function App() {
     setSelectedSubItem(null);
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
-    setView('main');
+    setView('added');
   };
 
-  // Add final item with modifiers to cart state, increment quantity if identical item exists
+  useEffect(() => {
+    if (view === 'added') {
+      const timer = setTimeout(() => {
+        setView('main');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [view]);
+
   const addItemToCart = (item, modifiers, secondMods) => {
     let price = item.price;
-    modifiers.forEach((mod) => {
-      price += mod.price || 0;
-    });
+
+    // Calculate upcharges: first protein modifier free, others +1
+    if (selectedMenu?.id === 6) {
+      // Count protein modifiers beyond first
+      const extraProteinCount = modifiers.length > 1 ? modifiers.length - 1 : 0;
+      price += extraProteinCount * 1;
+    } else {
+      modifiers.forEach((mod) => {
+        price += mod.price || 0;
+      });
+    }
+
     secondMods.forEach((mod) => {
       price += mod.price || 0;
     });
@@ -113,12 +131,10 @@ function App() {
     );
 
     if (existingIndex !== -1) {
-      // Increment quantity if item exists
       const updatedCart = [...cart];
       updatedCart[existingIndex].quantity += 1;
       setCart(updatedCart);
     } else {
-      // Add new item to cart
       const cartItem = {
         id: `${item.id}-${Date.now()}`,
         name: item.name,
@@ -133,12 +149,10 @@ function App() {
     }
   };
 
-  // Remove item from cart by id
   const removeFromCart = (id) => {
     setCart(cart.filter((item) => item.id !== id));
   };
 
-  // Update quantity (works with + and - buttons)
   const updateQuantity = (id, newQuantity) => {
     if (newQuantity <= 0) {
       removeFromCart(id);
@@ -149,22 +163,18 @@ function App() {
     }
   };
 
-  // Place order and show thank you page (exit)
   const placeOrder = () => {
     setView('exit');
   };
 
-  // Calculate totals
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * TAX_RATE;
   const total = subtotal + tax;
 
-  // Navigation helpers
   const goBackToMenu = () => setView('main');
   const goToCart = () => setView('cart');
   const goToCheckout = () => setView('checkout');
 
-  // Render top right buttons except on main and exit pages
   const renderTopRightButtons = () => (
     <div
       style={{
@@ -178,9 +188,15 @@ function App() {
         marginRight: 'auto',
       }}
     >
-      {view !== 'main' && view !== 'exit' && <BackToMenuButton onClick={goBackToMenu} />}
-      {view !== 'cart' && view !== 'exit' && <ViewCartButton onClick={goToCart} cartCount={cart.length} />}
-      {view !== 'checkout' && view !== 'exit' && <CheckoutButton onClick={goToCheckout} />}
+      {view !== 'main' && view !== 'exit' && view !== 'added' && (
+        <BackToMenuButton onClick={goBackToMenu} />
+      )}
+      {view !== 'cart' && view !== 'exit' && view !== 'added' && (
+        <ViewCartButton onClick={goToCart} cartCount={cart.length} />
+      )}
+      {view !== 'checkout' && view !== 'exit' && view !== 'added' && (
+        <CheckoutButton onClick={goToCheckout} />
+      )}
     </div>
   );
 
@@ -188,7 +204,6 @@ function App() {
     <div className="app-container" style={{ padding: '60px 20px 20px 20px', fontFamily: 'Arial' }}>
       {renderTopRightButtons()}
 
-      {/* Main Menu View */}
       {view === 'main' && (
         <>
           <div
@@ -216,7 +231,6 @@ function App() {
         </>
       )}
 
-      {/* Submenu View */}
       {view === 'submenu' && selectedMenu && (
         <>
           <h2 style={{ textAlign: 'center', color: BUTTON_COLOR, marginBottom: 20 }}>
@@ -315,11 +329,26 @@ function App() {
             ))}
           </div>
 
-          {/* Show modifiers & confirm ONLY if a submenu item selected */}
           {selectedSubItem && (
             <>
-              {/* First modifiers */}
-              {selectedMenu.modifiers.length > 0 && (
+              {/* YOUR CUSTOM SENTENCE ABOVE THE PROTEIN MODIFIERS */}
+              {(selectedSubItem?.modifiers ?? selectedMenu.modifiers)?.length > 0 && (
+                <div
+                  style={{
+                    maxWidth: 480,
+                    margin: '0 auto 12px auto',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: BUTTON_COLOR,
+                    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  }}
+                >
+                  Please choose your protein. Additional protein is +$1.
+                </div>
+              )}
+
+              {/* FIRST MODIFIERS WITHOUT UPCHARGES DISPLAYED */}
+              {(selectedSubItem?.modifiers ?? selectedMenu.modifiers)?.length > 0 && (
                 <div
                   style={{
                     marginBottom: '20px',
@@ -344,7 +373,7 @@ function App() {
                   <div
                     style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}
                   >
-                    {selectedMenu.modifiers.map((mod) => {
+                    {(selectedSubItem?.modifiers ?? selectedMenu.modifiers).map((mod) => {
                       const isChecked = selectedModifiers.some((m) => m.name === mod.name);
                       const isRadio = ['Medium', 'Large', 'X-Large'].includes(mod.name);
                       return (
@@ -371,10 +400,8 @@ function App() {
                             onChange={() => toggleModifier(mod)}
                             style={{ marginRight: '8px', cursor: 'pointer' }}
                           />
-                          {mod.name}{' '}
-                          {mod.price > 0 && !['Medium', 'Large', 'X-Large'].includes(mod.name)
-                            ? `+ $${mod.price.toFixed(2)}`
-                            : ''}
+                          {mod.name}
+                          {/* No price shown here, intentionally hidden */}
                         </label>
                       );
                     })}
@@ -382,7 +409,7 @@ function App() {
                 </div>
               )}
 
-              {/* Secondary modifiers appear ONLY if first modifier selected */}
+              {/* SECONDARY MODIFIERS */}
               {selectedModifiers.length > 0 &&
                 selectedMenu.secondModifiers &&
                 selectedMenu.secondModifiers.length > 0 && (
@@ -440,8 +467,7 @@ function App() {
                               onChange={() => toggleSecondModifier(mod)}
                               style={{ marginRight: '8px', cursor: 'pointer' }}
                             />
-                            {mod.name}{' '}
-                            {mod.price > 0 ? `+ $${mod.price.toFixed(2)}` : ''}
+                            {mod.name} {mod.price > 0 ? `+ $${mod.price.toFixed(2)}` : ''}
                           </label>
                         );
                       })}
@@ -449,7 +475,6 @@ function App() {
                   </div>
                 )}
 
-              {/* Confirm button only after first modifier selected */}
               {selectedModifiers.length > 0 && (
                 <div style={{ textAlign: 'center', marginTop: 10 }}>
                   <button
@@ -474,18 +499,16 @@ function App() {
         </>
       )}
 
-      {/* Cart View */}
       {view === 'cart' && (
         <Cart
           cartItems={cart}
           onBackToMenu={goBackToMenu}
           onGoToCheckout={goToCheckout}
           onRemoveFromCart={removeFromCart}
-          onUpdateQuantity={updateQuantity} // pass updateQuantity to Cart
+          onUpdateQuantity={updateQuantity}
         />
       )}
 
-      {/* Checkout View */}
       {view === 'checkout' && (
         <Checkout
           cart={cart}
@@ -500,7 +523,6 @@ function App() {
         />
       )}
 
-      {/* Exit View */}
       {view === 'exit' && (
         <ThankYou
           total={total}
@@ -509,6 +531,26 @@ function App() {
             setView('main');
           }}
         />
+      )}
+
+      {view === 'added' && (
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: 100,
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+          }}
+        >
+          <img
+            src="/Yoby Joby - VECTOR (Sticker).png"
+            alt="Yoby Joby Sticker"
+            style={{ maxWidth: 200, marginBottom: 30 }}
+            draggable={false}
+          />
+          <h2 style={{ fontSize: '1.8rem', color: BUTTON_COLOR }}>
+            Item has been added to your Cart
+          </h2>
+        </div>
       )}
     </div>
   );

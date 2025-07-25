@@ -14,6 +14,7 @@ export default function SubMenu({
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedModifiers, setSelectedModifiers] = useState([]);
   const [selectedSecondModifiers, setSelectedSecondModifiers] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const glowRefs = useRef({});
 
   const handleToggleModifier = (mod) => {
@@ -42,7 +43,6 @@ export default function SubMenu({
       quantity: 1,
     });
 
-    // If no modifiers, apply glow effect
     if (modifiers.length === 0 && secondModifiers.length === 0) {
       const ref = glowRefs.current[selectedItem.id];
       if (ref) {
@@ -54,6 +54,10 @@ export default function SubMenu({
     setSelectedItem(null);
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
+
+    // Show 3-second confirmation screen
+    setShowConfirmation(true);
+    setTimeout(() => setShowConfirmation(false), 3000);
   };
 
   return (
@@ -74,86 +78,107 @@ export default function SubMenu({
         hideCheckout={false}
       />
 
-      <h2 style={{ textAlign: "center", marginTop: 60 }}>{name}</h2>
+      {showConfirmation ? (
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: 100,
+          }}
+        >
+          <h2 style={{ color: "#4605e5" }}>Item has been added to your Cart</h2>
+          <img
+            src="/Yoby Joby - VECTOR (Sticker).png"
+            alt="Yoby Joby Sticker"
+            style={{ marginTop: 30, maxWidth: "80%", height: "auto" }}
+          />
+        </div>
+      ) : (
+        <>
+          <h2 style={{ textAlign: "center", marginTop: 60 }}>{name}</h2>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 20,
-          justifyContent: "center",
-          marginTop: 30,
-        }}
-      >
-        {subMenu.map((item) => (
           <div
-            key={item.id}
-            ref={(el) => (glowRefs.current[item.id] = el)}
             style={{
-              border:
-                selectedItem?.id === item.id ? "2px solid #4605e5" : "1px solid #ccc",
-              borderRadius: 8,
-              padding: 10,
-              width: 150,
-              minHeight: 280,
-              textAlign: "center",
-              boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-              userSelect: "none",
               display: "flex",
-              flexDirection: "column",
-              cursor: "default",
+              flexWrap: "wrap",
+              gap: 20,
+              justifyContent: "center",
+              marginTop: 30,
             }}
           >
-            <div
-              onClick={() => setSelectedItem(item)}
-              style={{ cursor: "pointer" }}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                style={{ width: "100%", height: "auto", marginBottom: 10 }}
-              />
-              <div>{item.name}</div>
-              <div>${item.price.toFixed(2)}</div>
-            </div>
+            {subMenu.map((item) => (
+              <div
+                key={item.id}
+                ref={(el) => (glowRefs.current[item.id] = el)}
+                style={{
+                  border:
+                    selectedItem?.id === item.id
+                      ? "2px solid #4605e5"
+                      : "1px solid #ccc",
+                  borderRadius: 8,
+                  padding: 10,
+                  width: 150,
+                  minHeight: 280,
+                  textAlign: "center",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+                  userSelect: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  cursor: "default",
+                }}
+              >
+                <div
+                  onClick={() => setSelectedItem(item)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{ width: "100%", height: "auto", marginBottom: 10 }}
+                  />
+                  <div>{item.name}</div>
+                  <div>${item.price.toFixed(2)}</div>
+                </div>
 
-            <button
-              onClick={() => {
-                if (modifiers.length || secondModifiers.length) {
-                  setSelectedItem(item);
-                } else {
-                  setSelectedItem(item);
-                  handleAddToCart();
-                }
-              }}
-              style={{
-                marginTop: "auto",
-                backgroundColor: '#673ab7',
-                color: 'white',
-                border: 'none',
-                borderRadius: 5,
-                cursor: 'pointer',
-                padding: '10px 20px',
-                userSelect: 'none',
-              }}
-            >
-              Add to Cart
-            </button>
+                <button
+                  onClick={() => {
+                    if (modifiers.length || secondModifiers.length) {
+                      setSelectedItem(item);
+                    } else {
+                      setSelectedItem(item);
+                      handleAddToCart();
+                    }
+                  }}
+                  style={{
+                    marginTop: "auto",
+                    backgroundColor: "#673ab7",
+                    color: "white",
+                    border: "none",
+                    borderRadius: 5,
+                    cursor: "pointer",
+                    padding: "10px 20px",
+                    userSelect: "none",
+                  }}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {selectedItem && (modifiers.length > 0 || secondModifiers.length > 0) && (
-        <ModifierPanel
-          modifiers={modifiers}
-          secondModifiers={secondModifiers}
-          selectedModifiers={selectedModifiers}
-          selectedSecondModifiers={selectedSecondModifiers}
-          onToggleModifier={handleToggleModifier}
-          onToggleSecondModifier={handleToggleSecondModifier}
-          onConfirm={handleAddToCart}
-          onCancel={() => setSelectedItem(null)}
-        />
+          {selectedItem &&
+            (modifiers.length > 0 || secondModifiers.length > 0) && (
+              <ModifierPanel
+                modifiers={modifiers}
+                secondModifiers={secondModifiers}
+                selectedModifiers={selectedModifiers}
+                selectedSecondModifiers={selectedSecondModifiers}
+                onToggleModifier={handleToggleModifier}
+                onToggleSecondModifier={handleToggleSecondModifier}
+                onConfirm={handleAddToCart}
+                onCancel={() => setSelectedItem(null)}
+              />
+            )}
+        </>
       )}
     </div>
   );

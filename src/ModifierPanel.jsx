@@ -11,114 +11,106 @@ export default function ModifierPanel({
   onConfirm,
   onCancel,
 }) {
-  // Helper function for skipping upcharge on specific names
-  const skipUpchargeNames = ["Medium", "Large", "X-Large"];
+  const isSelected = (group, option) => {
+    return selectedModifiers[group]?.includes(option) || false;
+  };
+
+  const isSecondSelected = (group, option) => {
+    return selectedSecondModifiers[group]?.includes(option) || false;
+  };
+
+  const handleToggle = (group, option, second = false) => {
+    if (second) {
+      onToggleSecondModifier(group, option);
+    } else {
+      onToggleModifier(group, option);
+    }
+  };
+
+  const renderModifierGroup = (groupName, options, selected, second = false) => {
+    const showUpchargeNotice =
+      groupName.toLowerCase().includes("meat") ||
+      groupName.toLowerCase().includes("protein");
+
+    return (
+      <div key={groupName} style={{ marginBottom: "20px" }}>
+        <div style={{ fontWeight: "bold", marginBottom: "8px", fontSize: "16px" }}>
+          {groupName}
+        </div>
+
+        {showUpchargeNotice && (
+          <div style={{ color: "#4605e5", marginBottom: "8px", fontSize: "14px" }}>
+            Choose your protein. Add a 2nd protein for +$1.
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          {options.map((option) => {
+            const selectedList = selected[groupName] || [];
+            const selectedCount = selectedList.length;
+            const isSelectedOption = selectedList.includes(option);
+
+            return (
+              <button
+                key={option}
+                onClick={() => handleToggle(groupName, option, second)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "6px",
+                  border: isSelectedOption ? "2px solid #4605e5" : "1px solid #ccc",
+                  backgroundColor: isSelectedOption ? "#eae4ff" : "#fff",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div
-      style={{
-        backgroundColor: "white",
-        borderRadius: 10,
-        padding: 20,
-        maxWidth: 900,
-        margin: "20px auto 0",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h3 style={{ textAlign: "center" }}>Select Modifiers</h3>
-
-      {modifiers.length > 0 && (
-        <div style={{ marginBottom: 15 }}>
-          <strong>Modifiers:</strong>
-          <div
-            style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}
-          >
-            {modifiers.map((mod) => {
-              const selected = selectedModifiers.some((m) => m.name === mod.name);
-              // Check if mod.name is one of the skip names
-              const showUpcharge =
-                mod.price > 0 && !skipUpchargeNames.includes(mod.name);
-              return (
-                <button
-                  key={mod.name}
-                  onClick={() => onToggleModifier(mod)}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: 5,
-                    border: selected ? "2px solid #4605e5" : "1px solid #ccc",
-                    backgroundColor: selected ? "#e3dfff" : "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  {mod.name} {showUpcharge ? `+ $${mod.price.toFixed(2)}` : ""}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      {Object.entries(modifiers).map(([group, options]) =>
+        renderModifierGroup(group, options, selectedModifiers)
       )}
 
-      {secondModifiers.length > 0 && (
-        <div style={{ marginBottom: 15 }}>
-          <strong>Extras:</strong>
-          <div
-            style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 5 }}
-          >
-            {secondModifiers.map((mod) => {
-              const selected = selectedSecondModifiers.some(
-                (m) => m.name === mod.name
-              );
-              return (
-                <button
-                  key={mod.name}
-                  onClick={() => onToggleSecondModifier(mod)}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: 5,
-                    border: selected ? "2px solid #4605e5" : "1px solid #ccc",
-                    backgroundColor: selected ? "#e3dfff" : "white",
-                    cursor: "pointer",
-                  }}
-                >
-                  {mod.name} {mod.price > 0 ? `+ $${mod.price.toFixed(2)}` : ""}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      {Object.entries(secondModifiers).map(([group, options]) =>
+        renderModifierGroup(group, options, selectedSecondModifiers, true)
       )}
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginTop: 20,
-        }}
-      >
-        <button
-          onClick={onCancel}
-          style={{
-            padding: "10px 20px",
-            borderRadius: 5,
-            cursor: "pointer",
-            backgroundColor: "#ccc",
-            border: "none",
-          }}
-        >
-          Cancel
-        </button>
+      <div style={{ marginTop: "30px", textAlign: "center" }}>
         <button
           onClick={onConfirm}
           style={{
-            padding: "10px 20px",
-            borderRadius: 5,
-            cursor: "pointer",
             backgroundColor: "#4605e5",
             color: "white",
+            padding: "10px 20px",
+            borderRadius: "6px",
             border: "none",
+            cursor: "pointer",
+            fontWeight: "bold",
+            marginRight: "12px",
           }}
         >
-          Add to Cart
+          Confirm
+        </button>
+        <button
+          onClick={onCancel}
+          style={{
+            backgroundColor: "#777",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            border: "none",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Cancel
         </button>
       </div>
     </div>
