@@ -12,10 +12,6 @@ const menu = [
       { name: 'Medium', price: 0 },
       { name: 'Large', price: 0.85 }
     ],
-    secondModifiers: [
-      { name: 'No, Thanks', price: 0 },
-      { name: 'Extra Bubbles', price: 1.00 },
-    ],
     image: '/Yoby - Menu - bubble coffee ICON.png',
   },
   {
@@ -38,8 +34,9 @@ const menu = [
       { name: 'Large', price: 1.00 }
     ],
     secondModifiers: [
-      { name: 'No, Thanks', price: 0 },
-      { name: 'Extra Bubbles', price: 1.00 },
+      { name: 'Add Protein', price: 1.50 },
+      { name: 'Add Collagen', price: 1.50 },
+      { name: 'Add Creatine', price: 1.50 },
     ],
     image: '/Yoby - Menu - Bubble Tea ICON.png',
   },
@@ -185,7 +182,7 @@ const menu = [
       {
         id: 802,
         name: 'Greek Granola Yogurt Bowl',
-        price: 8.00,
+        price: 7.00,
         image: '/Yoby - Menu - Delicious Snacks 2.png',
         modifiers: [
           { name: 'Blueberry', price: 0, image: '/YJ - Greek Yogurt Pic - Blueberry.png' },
@@ -193,7 +190,7 @@ const menu = [
         ],
       },
       { id: 803, name: 'Big Salad', price: 9.00, image: '/Yoby - Menu - Delicious Snacks 3.png' },
-      { id: 804, name: 'Big Chicken Salad Bowl', price: 11.50, image: '/Yoby - Menu - Delicious Snacks 4.png' },
+      { id: 804, name: 'Big Chicken Salad Bowl', price: 9.00, image: '/Yoby - Menu - Delicious Snacks 4.png' },
       { id: 805, name: 'Sausage Scrambled Egg Box', price: 8.00, image: '/Yoby - Menu - Delicious Snacks 5.png' },
     ],
     modifiers: [],

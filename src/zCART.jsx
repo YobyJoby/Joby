@@ -1,57 +1,15 @@
-import React, { useState } from "react";
-import emailjs from "@emailjs/browser";
+import React from "react";
 
 const BUTTON_COLOR = "#4605e5";
 
-export default function Checkout({
-  cart,
-  subtotal,
-  tax,
-  total,
-  placeOrder,
+export default function Cart({
+  cartItems,
   onBackToMenu,
+  onGoToCheckout,
   onRemoveFromCart,
   onUpdateQuantity,
 }) {
-  const [isSending, setIsSending] = useState(false);
-
-  const handleEmailOrder = () => {
-    if (isSending) return;
-
-    // Use backticks for the multi-line template literal string
-    const checkoutDetails = `ORDER SUMMARY:\n\n${cart
-      .map(
-        (item) =>
-          `• ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(
-            ", "
-          )}\n  Extras: ${item.secondModifiers.join(
-            ", "
-          )}\n  Total: $${(item.price * item.quantity).toFixed(2)}\n`
-      )
-      .join("\n")}\nSubtotal: $${subtotal.toFixed(2)}\nTax (13%): $${tax.toFixed(
-      2
-    )}\nTotal: $${total.toFixed(2)}`;
-
-    setIsSending(true);
-
-    emailjs
-      .send(
-        "service_v822ir4",
-        "template_prnbbf1",
-        { message: checkoutDetails },
-        "7q-MiD1gTt9IMkSeb"
-      )
-      .then(
-        () => {
-          setIsSending(false);
-          placeOrder();
-        },
-        (error) => {
-          setIsSending(false);
-          alert("Failed to send email:\n" + error.text);
-        }
-      );
-  };
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <div
@@ -65,10 +23,10 @@ export default function Checkout({
       }}
     >
       <h2 style={{ textAlign: "center", color: BUTTON_COLOR, marginBottom: 30 }}>
-        Checkout
+        Your Cart
       </h2>
 
-      {cart.length === 0 ? (
+      {cartItems.length === 0 ? (
         <p style={{ textAlign: "center", fontSize: 20 }}>Your cart is empty.</p>
       ) : (
         <>
@@ -81,7 +39,7 @@ export default function Checkout({
               width: "100%",
             }}
           >
-            {cart.map((item) => (
+            {cartItems.map((item) => (
               <div
                 key={item.id}
                 style={{
@@ -89,7 +47,7 @@ export default function Checkout({
                   alignItems: "center",
                   gap: 15,
                   padding: 10,
-                  border: `1px solid ${BUTTON_COLOR}`,
+                  border: 1px solid ${BUTTON_COLOR},
                   borderRadius: 8,
                   backgroundColor: "#fafafa",
                   width: "100%",
@@ -149,7 +107,7 @@ export default function Checkout({
                         cursor: item.quantity <= 1 ? "not-allowed" : "pointer",
                         opacity: item.quantity <= 1 ? 0.5 : 1,
                         borderRadius: 6,
-                        border: `1px solid ${BUTTON_COLOR}`,
+                        border: 1px solid ${BUTTON_COLOR},
                         background: "white",
                         color: BUTTON_COLOR,
                       }}
@@ -165,7 +123,7 @@ export default function Checkout({
                         fontWeight: "bold",
                         cursor: "pointer",
                         borderRadius: 6,
-                        border: `1px solid ${BUTTON_COLOR}`,
+                        border: 1px solid ${BUTTON_COLOR},
                         background: "white",
                         color: BUTTON_COLOR,
                       }}
@@ -185,6 +143,24 @@ export default function Checkout({
                 >
                   ${(item.price * item.quantity).toFixed(2)}
                 </div>
+
+                <button
+                  onClick={() => onRemoveFromCart(item.id)}
+                  style={{
+                    marginLeft: 15,
+                    backgroundColor: "#e53935",
+                    color: "white",
+                    border: "none",
+                    borderRadius: 5,
+                    padding: "6px 10px",
+                    cursor: "pointer",
+                    userSelect: "none",
+                    fontWeight: "bold",
+                  }}
+                  title="Remove Item"
+                >
+                  ✕
+                </button>
               </div>
             ))}
           </div>
@@ -193,57 +169,36 @@ export default function Checkout({
             style={{
               fontWeight: "bold",
               fontSize: 20,
-              textAlign: "center",
-              marginBottom: 10,
+              textAlign: "right",
+              marginBottom: 30,
+              borderTop: "1px solid #ccc",
+              paddingTop: 10,
+              width: "100%",
+              boxSizing: "border-box",
             }}
           >
             Subtotal: ${subtotal.toFixed(2)}
           </div>
-          <div
-            style={{
-              fontWeight: "bold",
-              fontSize: 20,
-              textAlign: "center",
-              marginBottom: 10,
-            }}
-          >
-            Tax (13%): ${tax.toFixed(2)}
-          </div>
-          <div
-            style={{
-              fontWeight: "bold",
-              fontSize: 24,
-              textAlign: "center",
-              marginBottom: 30,
-            }}
-          >
-            Total: ${total.toFixed(2)}
-          </div>
 
           <div style={{ textAlign: "center" }}>
             <button
-              onClick={handleEmailOrder}
-              disabled={isSending}
+              onClick={onGoToCheckout}
               style={{
-                backgroundColor: isSending ? "#888" : BUTTON_COLOR,
+                backgroundColor: BUTTON_COLOR,
                 color: "white",
                 border: "none",
                 padding: "14px 40px",
                 borderRadius: 8,
                 fontSize: 20,
                 fontWeight: "bold",
-                cursor: isSending ? "not-allowed" : "pointer",
+                cursor: "pointer",
                 userSelect: "none",
                 transition: "background-color 0.3s ease",
               }}
-              onMouseEnter={(e) => {
-                if (!isSending) e.currentTarget.style.backgroundColor = "#5a04c2";
-              }}
-              onMouseLeave={(e) => {
-                if (!isSending) e.currentTarget.style.backgroundColor = BUTTON_COLOR;
-              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#5a04c2")}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = BUTTON_COLOR)}
             >
-              {isSending ? "Sending Order..." : "Place Order"}
+              Checkout
             </button>
           </div>
         </>

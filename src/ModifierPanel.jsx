@@ -1,118 +1,115 @@
-// src/ModifierPanel.jsx
-import React from "react";
+// src/Item.jsx
+import React, { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ModifierPanel from "./ModifierPanel";
+import { CartContext } from "./CartContext";
 
-export default function ModifierPanel({
-  modifiers,
-  secondModifiers = [],
-  selectedModifiers,
-  selectedSecondModifiers,
-  onToggleModifier,
-  onToggleSecondModifier,
-  onConfirm,
-  onCancel,
-}) {
-  const isSelected = (group, option) => {
-    return selectedModifiers[group]?.includes(option) || false;
-  };
+const BUTTON_COLOR = "#4605e5";
 
-  const isSecondSelected = (group, option) => {
-    return selectedSecondModifiers[group]?.includes(option) || false;
-  };
+export default function Item({ menu }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
 
-  const handleToggle = (group, option, second = false) => {
-    if (second) {
-      onToggleSecondModifier(group, option);
+  const selectedMenu = menu.find((m) =>
+    m.items.some((i) => i.name === id)
+  );
+
+  const item = selectedMenu?.items.find((i) => i.name === id);
+
+  const [selectedModifiers, setSelectedModifiers] = useState([]);
+  const [selectedSecondModifiers, setSelectedSecondModifiers] = useState([]);
+  const [showSecondModifiers, setShowSecondModifiers] = useState(false);
+
+  useEffect(() => {
+    setSelectedModifiers([]);
+    setSelectedSecondModifiers([]);
+    setShowSecondModifiers(false);
+  }, [item]);
+
+  const toggleModifier = (mod) => {
+    const alreadySelected = selectedModifiers.some((m) => m.name === mod.name);
+    let updated;
+
+    if (alreadySelected) {
+      updated = selectedModifiers.filter((m) => m.name !== mod.name);
     } else {
-      onToggleModifier(group, option);
+      updated = [mod]; // Only allow one modifier at a time
     }
+
+    setSelectedModifiers(updated);
+
+    const isBubbleTeaOrCoffee = selectedMenu?.id === 8 || selectedMenu?.id === 9;
+    const hasSecondModifiers =
+      isBubbleTeaOrCoffee || (item?.secondModifiers?.length > 0);
+
+    setShowSecondModifiers(hasSecondModifiers);
   };
 
-  const renderModifierGroup = (groupName, options, selected, second = false) => {
-    const showUpchargeNotice =
-      groupName.toLowerCase().includes("meat") ||
-      groupName.toLowerCase().includes("protein");
+  const toggleSecondModifier = (mod) => {
+    const alreadySelected = selectedSecondModifiers.some((m) => m.name === mod.name);
+    let updated;
 
-    return (
-      <div key={groupName} style={{ marginBottom: "20px" }}>
-        <div style={{ fontWeight: "bold", marginBottom: "8px", fontSize: "16px" }}>
-          {groupName}
-        </div>
+    if (alreadySelected) {
+      updated = selectedSecondModifiers.filter((m) => m.name !== mod.name);
+    } else {
+      updated = [mod]; // Only allow one second modifier at a time
+    }
 
-        {showUpchargeNotice && (
-          <div style={{ color: "#4605e5", marginBottom: "8px", fontSize: "14px" }}>
-            Choose your protein. Add a 2nd protein for +$1.
-          </div>
-        )}
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {options.map((option) => {
-            const selectedList = selected[groupName] || [];
-            const selectedCount = selectedList.length;
-            const isSelectedOption = selectedList.includes(option);
-
-            return (
-              <button
-                key={option}
-                onClick={() => handleToggle(groupName, option, second)}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: "6px",
-                  border: isSelectedOption ? "2px solid #4605e5" : "1px solid #ccc",
-                  backgroundColor: isSelectedOption ? "#eae4ff" : "#fff",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                }}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
+    setSelectedSecondModifiers(updated);
   };
+
+  const handleAddToCart = () => {
+    const finalItem = {
+      ...item,
+      modifiers: selectedModifiers,
+      secondModifiers: selectedSecondModifiers,
+      quantity: 1,
+    };
+    addToCart(finalItem);
+    navigate("/menu");
+  };
+
+  if (!item) return <div>Item not found</div>;
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      {Object.entries(modifiers).map(([group, options]) =>
-        renderModifierGroup(group, options, selectedModifiers)
-      )}
-
-      {Object.entries(secondModifiers).map(([group, options]) =>
-        renderModifierGroup(group, options, selectedSecondModifiers, true)
-      )}
-
-      <div style={{ marginTop: "30px", textAlign: "center" }}>
-        <button
-          onClick={onConfirm}
-          style={{
-            backgroundColor: "#4605e5",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "6px",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            marginRight: "12px",
-          }}
-        >
-          Confirm
-        </button>
-        <button
-          onClick={onCancel}
-          style={{
-            backgroundColor: "#777",
-            color: "white",
-            padding: "10px 20px",
-            borderRadius: "6px",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Cancel
-        </button>
-      </div>
+    <div style={{ textAlign: "center", padding: 20 }}>
+      <h1 style={{ fontSize: "2rem", marginBottom: 20 }}>{item.name}</h1>
+      <img
+        src={item.image}
+        alt={item.name}
+        style={{
+          width: "50%",
+          maxWidth: 400,
+          borderRadius: 20,
+          marginBottom: 20,
+        }}
+      />
+      <ModifierPanel
+        item={item}
+        selectedModifiers={selectedModifiers}
+        selectedSecondModifiers={selectedSecondModifiers}
+        toggleModifier={toggleModifier}
+        toggleSecondModifier={toggleSecondModifier}
+        selectedMenu={selectedMenu}
+        showSecondModifiers={showSecondModifiers}
+      />
+      <button
+        onClick={handleAddToCart}
+        style={{
+          marginTop: 40,
+          padding: "12px 24px",
+          backgroundColor: BUTTON_COLOR,
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "1.2rem",
+          border: "none",
+          borderRadius: 8,
+          cursor: "pointer",
+        }}
+      >
+        Add to Cart
+      </button>
     </div>
   );
 }

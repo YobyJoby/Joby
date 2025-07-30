@@ -1,6 +1,7 @@
-// src/MainMenu.jsx
 import React, { useState, useRef } from 'react';
 import menu from './menu';
+
+const fullCode = // full MainMenu.jsx code including copy button;
 
 function ModifiersPanel({
   modifiers,
@@ -39,7 +40,7 @@ function ModifiersPanel({
               />
               {mod.name}
               {!['Medium', 'Large', 'X-Large'].includes(mod.name) && mod.price > 0
-                ? ` (+$${mod.price.toFixed(2)})`
+                ?  (+$${mod.price.toFixed(2)})
                 : ''}
             </label>
           ))}
@@ -57,7 +58,7 @@ function ModifiersPanel({
                 onChange={() => onToggleSecondModifier(mod)}
               />
               {mod.name}
-              {mod.price > 0 ? ` (+$${mod.price.toFixed(2)})` : ''}
+              {mod.price > 0 ?  (+$${mod.price.toFixed(2)}) : ''}
             </label>
           ))}
         </div>
@@ -79,7 +80,6 @@ export default function MainMenu() {
   const [selectedSecondModifiers, setSelectedSecondModifiers] = useState([]);
   const [cart, setCart] = useState([]);
   const [promptMessage, setPromptMessage] = useState('');
-  const [showSecondModifiers, setShowSecondModifiers] = useState(false);
   const glowRefs = useRef({});
 
   const TAX_RATE = 0.13;
@@ -106,7 +106,6 @@ export default function MainMenu() {
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
     setPromptMessage('');
-    setShowSecondModifiers(false);
     setView('submenu');
   };
 
@@ -145,8 +144,6 @@ export default function MainMenu() {
     setSelectedSubItem(subItem);
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
-    setShowSecondModifiers(false);
-
     if (selectedMenu?.id === 6) {
       setPromptMessage('Would you like to supe it up?');
     } else if (
@@ -155,43 +152,26 @@ export default function MainMenu() {
     ) {
       setPromptMessage('What size are you thinking?');
     } else {
-      // No modifiers, add directly
       addItemToCart(subItem, [], []);
     }
   };
 
   const confirmSelection = () => {
-    if (!showSecondModifiers) {
-      // After first modifiers, check if secondModifiers exist
-      if (
-        selectedMenu?.secondModifiers &&
-        selectedMenu.secondModifiers.length > 0
-      ) {
-        // Require size selection if applicable
-        if (
-          selectedMenu?.modifiers.length > 0 &&
-          ![6, 7].includes(selectedMenu.id) &&
-          ['Medium', 'Large', 'X-Large'].some(
-            (mod) => selectedModifiers.find((m) => m.name === mod) !== undefined
-          ) === false
-        ) {
-          alert('Please select a size before proceeding.');
-          return;
-        }
-
-        setShowSecondModifiers(true);
-        setPromptMessage('Choose add-ons:');
-        return; // Wait for second modifiers selection
-      }
+    if (
+      selectedMenu?.modifiers.length > 0 &&
+      ![6, 7].includes(selectedMenu.id) &&
+      ['Medium', 'Large', 'X-Large'].some(
+        (mod) => selectedModifiers.find((m) => m.name === mod) !== undefined
+      ) === false
+    ) {
+      alert('Please select a size before proceeding.');
+      return;
     }
-
-    // Confirm after second modifiers or if no second modifiers
     addItemToCart(selectedSubItem, selectedModifiers, selectedSecondModifiers);
     setPromptMessage('');
     setSelectedSubItem(null);
     setSelectedModifiers([]);
     setSelectedSecondModifiers([]);
-    setShowSecondModifiers(false);
   };
 
   const addItemToCart = (item, modifiers, secondMods) => {
@@ -204,7 +184,7 @@ export default function MainMenu() {
     });
 
     const cartItem = {
-      id: `${item.id}-${Date.now()}`,
+      id: ${item.id}-${Date.now()},
       name: item.name,
       basePrice: item.price,
       modifiers: modifiers.map((m) => m.name),
@@ -240,13 +220,37 @@ export default function MainMenu() {
 
   return (
     <div className="app-container" style={{ padding: 20, fontFamily: 'Arial', position: 'relative' }}>
+      <button
+        style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          padding: "6px 12px",
+          backgroundColor: "#4605e5",
+          color: "white",
+          border: "none",
+          borderRadius: 5,
+          cursor: "pointer",
+          zIndex: 9999,
+          userSelect: "none",
+        }}
+        onClick={() => {
+          navigator.clipboard.writeText(fullCode).then(() => {
+            alert("Code copied to clipboard!");
+          });
+        }}
+        aria-label="Copy full MainMenu.jsx code"
+      >
+        Copy
+      </button>
+
       {view !== 'checkout' && view !== 'exit' && (
         <button
           onClick={handleViewCartClick}
           style={{
             position: 'fixed',
-            top: 10,
-            right: 10,
+            top: 60,
+            right: 20,
             padding: '10px 20px',
             backgroundColor: '#673ab7',
             color: 'white',
@@ -254,7 +258,6 @@ export default function MainMenu() {
             borderRadius: 5,
             cursor: 'pointer',
             zIndex: 1000,
-            userSelect: 'none',
           }}
         >
           View Cart ({cart.length})
@@ -305,6 +308,7 @@ export default function MainMenu() {
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >
+                {/* Title overlay */}
                 <h3
                   style={{
                     position: 'absolute',
@@ -399,8 +403,8 @@ export default function MainMenu() {
 
           {promptMessage && (
             <ModifiersPanel
-              modifiers={!showSecondModifiers ? selectedMenu.modifiers : []}
-              secondModifiers={showSecondModifiers ? selectedMenu.secondModifiers : []}
+              modifiers={selectedMenu.modifiers}
+              secondModifiers={selectedMenu.secondModifiers}
               selectedModifiers={selectedModifiers}
               selectedSecondModifiers={selectedSecondModifiers}
               onToggleModifier={toggleModifier}
@@ -411,7 +415,6 @@ export default function MainMenu() {
                 setSelectedSubItem(null);
                 setSelectedModifiers([]);
                 setSelectedSecondModifiers([]);
-                setShowSecondModifiers(false);
               }}
               promptMessage={promptMessage}
               isWraps={selectedMenu.id === 6}

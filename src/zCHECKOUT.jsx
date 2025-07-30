@@ -18,19 +18,17 @@ export default function Checkout({
   const handleEmailOrder = () => {
     if (isSending) return;
 
-    // Use backticks for the multi-line template literal string
-    const checkoutDetails = `ORDER SUMMARY:\n\n${cart
+    const checkoutDetails = ORDER SUMMARY:\n\n${cart
       .map(
         (item) =>
-          `• ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(
-            ", "
-          )}\n  Extras: ${item.secondModifiers.join(
-            ", "
-          )}\n  Total: $${(item.price * item.quantity).toFixed(2)}\n`
+          • ${item.name} x${item.quantity}\n  Size: ${item.modifiers.join(", ")}\n  Extras: ${item.secondModifiers.join(", ")}\n  Total: $${(
+            item.price * item.quantity
+          ).toFixed(2)}\n
       )
-      .join("\n")}\nSubtotal: $${subtotal.toFixed(2)}\nTax (13%): $${tax.toFixed(
-      2
-    )}\nTotal: $${total.toFixed(2)}`;
+      .join("\n")}
+\nSubtotal: $${subtotal.toFixed(2)}
+\nTax (13%): $${tax.toFixed(2)}
+\nTotal: $${total.toFixed(2)};
 
     setIsSending(true);
 
@@ -89,7 +87,7 @@ export default function Checkout({
                   alignItems: "center",
                   gap: 15,
                   padding: 10,
-                  border: `1px solid ${BUTTON_COLOR}`,
+                  border: 1px solid ${BUTTON_COLOR},
                   borderRadius: 8,
                   backgroundColor: "#fafafa",
                   width: "100%",
@@ -149,7 +147,7 @@ export default function Checkout({
                         cursor: item.quantity <= 1 ? "not-allowed" : "pointer",
                         opacity: item.quantity <= 1 ? 0.5 : 1,
                         borderRadius: 6,
-                        border: `1px solid ${BUTTON_COLOR}`,
+                        border: 1px solid ${BUTTON_COLOR},
                         background: "white",
                         color: BUTTON_COLOR,
                       }}
@@ -165,7 +163,7 @@ export default function Checkout({
                         fontWeight: "bold",
                         cursor: "pointer",
                         borderRadius: 6,
-                        border: `1px solid ${BUTTON_COLOR}`,
+                        border: 1px solid ${BUTTON_COLOR},
                         background: "white",
                         color: BUTTON_COLOR,
                       }}
